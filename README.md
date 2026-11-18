@@ -13,3 +13,4 @@ Automated ML retraining pipeline: GitHub push triggers Jenkins to regenerate the
 ## Stack
 
 FastAPI + uvicorn · scikit-learn logistic regression · Jenkins pipeline · Docker · AWS EC2
+# webhook test
