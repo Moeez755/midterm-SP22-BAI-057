@@ -17,3 +17,4 @@ FastAPI + uvicorn · scikit-learn logistic regression · Jenkins pipeline · Doc
 # webhook test
 # webhook test
 # webhook test
+# webhook test
