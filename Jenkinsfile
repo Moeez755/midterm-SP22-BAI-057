@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         STUDENT_ID     = 'SP22-BAI-057'
+        DOCKERHUB_REPO = 'moeezurrehman9/midterm-sp22-bai-057'
         DOCKER_IMAGE   = 'midterm-sp22-bai-057'
         CONTAINER_NAME = 'midterm-app'
     }
@@ -56,7 +57,29 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} -t ${DOCKER_IMAGE}:latest .'
+                sh '''
+                    docker build \
+                        -t ${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                        -t ${DOCKER_IMAGE}:latest \
+                        -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} \
+                        -t ${DOCKERHUB_REPO}:latest \
+                        .
+                '''
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                                  usernameVariable: 'DH_USER',
+                                                  passwordVariable: 'DH_TOKEN')]) {
+                    sh '''
+                        echo "$DH_TOKEN" | docker login -u "$DH_USER" --password-stdin
+                        docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
+                        docker push ${DOCKERHUB_REPO}:latest
+                        docker logout
+                    '''
+                }
             }
         }
 
@@ -80,11 +103,12 @@ pipeline {
             emailext(
                 subject: "[${STUDENT_ID}] Jenkins Build #${BUILD_NUMBER} SUCCESS",
                 body: """Student Reg No: ${STUDENT_ID}
-Build:   ${BUILD_NUMBER}
-Commit:  ${env.GIT_COMMIT}
-Metrics: http://16.170.210.121:8000/metrics
-Health:  http://16.170.210.121:8000/health
-Job:     ${env.BUILD_URL}
+Build:        ${BUILD_NUMBER}
+Commit:       ${env.GIT_COMMIT}
+Metrics URL:  http://16.170.210.121:8000/metrics
+Health URL:   http://16.170.210.121:8000/health
+DockerHub:    ${DOCKERHUB_REPO}:latest
+Job:          ${env.BUILD_URL}
 """,
                 to: 'qasimalik@gmail.com'
             )
