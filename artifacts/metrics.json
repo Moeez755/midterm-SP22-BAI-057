@@ -1,0 +1,8 @@
+{
+  "student_id": "SP22-BAI-057",
+  "accuracy": 0.826667,
+  "training_rows": 300,
+  "model_version": "8fad13be6dde",
+  "dataset_sha256": "8fad13be6dde678d9bced5ccb599d127680e62ba7399fb9174579d77a4a97bfe",
+  "git_sha": "local-test"
+}
